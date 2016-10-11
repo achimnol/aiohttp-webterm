@@ -1,0 +1,6 @@
+node_modules
+*.py[cod]
+.*.swp
+
+# Auto-generated files
+static

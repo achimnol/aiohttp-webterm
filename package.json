@@ -1,0 +1,6 @@
+{
+  "devDependencies": {
+    "terminal.js": ">=1.0",
+    "webpack": ">=1.13.1"
+  }
+}

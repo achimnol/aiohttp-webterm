@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+<head>
+  <title>Web Terminal Test using Python pty</title>
+  <script src="//cdn.jsdelivr.net/sockjs/1/sockjs.min.js"></script>
+  <script src="/static/js/main.js"></script>
+  <style>
+  #terminal {
+    font-family: "Menlo for Powerline", Menlo, Consolas, monospace;
+    font-size: 12px;
+    color: #eee;
+    background-color: black;
+    width: 600px;
+    height: 500px;
+  }
+  </style>
+</head>
+<body>
+  <h1>Terminal</h1>
+  <div id="terminal" data-colums="80" data-rows="24"></div>
+  <script type="text/javascript">
+  var container = document.getElementById('terminal');
+  var term = new Terminal(container);
+  var sock = new SockJS('http://' + document.domain + ':' + location.port + '/pty');
+  sock.onopen = function() {
+    console.log('open');
+
+    // TODO: proper Writable interface emulation
+    var pseudoWritable = function() { };
+    pseudoWritable.on = function(type, handler) { console.log('on', type, handler); }
+    pseudoWritable.once = function(type, handler) { console.log('once', type, handler); }
+    pseudoWritable.emit = function(data) { console.log('emit', data); }
+    pseudoWritable.write = function(data) { sock.send(data); }
+    term.dom(container).pipe(pseudoWritable);
+
+    console.log('initialized new term', term);
+  }
+  sock.onmessage = function(e) {
+    term.write(e.data);
+  }
+  sock.onclose = function() {
+    console.log('close');
+  }
+  </script>
+</body>
+</html>
+<!-- vim: set sts=2 sw=2 et: -->
