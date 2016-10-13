@@ -1,6 +1,6 @@
 import os, signal, pty
 import asyncio
-import pathlib
+from pathlib import Path
 
 import aiohttp
 from aiohttp import web
@@ -8,7 +8,7 @@ import uvloop
 import sockjs
 
 
-here = pathlib.Path(__file__).parent
+here = Path(__file__).parent
 pid = None
 fd  = None
 
@@ -42,9 +42,8 @@ def terminal_out(session, fd):
     session.send(data.decode('utf8'))
 
 async def index(request):
-    with open(str(here / 'templates' / 'index.html'), 'r') as f:
-        content = f.read()
-        return web.Response(text=content, content_type='text/html')
+    content = (here / 'templates' / 'index.html').read_text()
+    return web.Response(text=content, content_type='text/html')
 
 
 if __name__ == '__main__':
