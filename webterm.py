@@ -48,8 +48,14 @@ async def index(request):
 
 if __name__ == '__main__':
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+    loop = asyncio.get_event_loop()
     app = web.Application()
     app.router.add_get('/', index)
     app.router.add_static('/static', str(here / 'static'))
     sockjs.add_endpoint(app, terminal_handler, prefix='/pty')
-    web.run_app(app, port=5000)
+    try:
+        web.run_app(app, port=5000)
+    except (KeyboardInterrupt, SystemExit):
+        loop.stop()
+    finally:
+        loop.close()
